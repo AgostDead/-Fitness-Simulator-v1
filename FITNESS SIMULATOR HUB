@@ -1,9 +1,10 @@
 -- ============================================
---  FITNESS SIMULATOR HUB | PainKillersUi Edition
+--  FITNESS SIMULATOR HUB | PainKillersUI Edition
 --  Created by Angry66gsjjd (Clan: PainKillers)
 -- ============================================
 
-local PainKillersUi = loadstring(game:HttpGet("https://raw.githubusercontent.com/Angry66gsjjd/uilib/main/PainKillersUi"))()
+-- ИСПОЛЬЗУЕМ ТВОЮ БИБЛИОТЕКУ
+local PainKillersUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Angry66gsjjd/My-Library/main/dist/main.lua"))()
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -14,22 +15,30 @@ local Workspace = game:GetService("Workspace")
 -- ============================================
 --  INTERFACE
 -- ============================================
-local Window = PainKillersUi:CreateWindow({
+local Window = PainKillersUI:CreateWindow({
     Title = "Fitness Simulator | Hub",
-    Theme = "Dark",
+    Icon = "box",
+    Author = "Angry66gsjjd",
+    Folder = "FitnessSim",
     Size = UDim2.fromOffset(550, 480),
+    Theme = "Dark",
+    ToggleKey = Enum.KeyCode.RightShift, -- Кнопка открытия (Правый Shift)
 })
 
 -- ============================================
 --  TAB: MAIN (FARM & AUTO)
 -- ============================================
-local MainTab = Window:Tab({ Title = "Main" })
+local MainTab = Window:Tab({ Title = "Main", Icon = "swords" })
 MainTab:Section({ Title = "Farming & Upgrades" })
 
+-- Farm / Sell
 local farmSpeed = 0.05
 MainTab:Slider({
     Title = "Farm Speed",
+    Desc = "0.05 = Fast / 0.1 = Safe",
+    Icon = "zap",
     Value = { Min = 0.01, Max = 0.5, Default = 0.05 },
+    Step = 0.01,
     Callback = function(val) farmSpeed = val end
 })
 
@@ -38,6 +47,8 @@ local farmConnection = nil
 
 MainTab:Toggle({
     Title = "Auto Farm / Sell",
+    Desc = "Spams Lift and Sell",
+    Icon = "flame",
     Value = false,
     Callback = function(state)
         isFarming = state
@@ -51,19 +62,22 @@ MainTab:Toggle({
                     ReplicatedStorage.Events.Sell:FireServer()
                 end)
             end)
-            Window:Notify({Title = "Auto Farm", Content = "Enabled", Duration = 3})
+            PainKillersUI:Notify({Title = "Auto Farm", Content = "Enabled", Duration = 3, Icon = "play"})
         else
             if farmConnection then farmConnection:Disconnect() farmConnection = nil end
-            Window:Notify({Title = "Auto Farm", Content = "Disabled", Duration = 3})
+            PainKillersUI:Notify({Title = "Auto Farm", Content = "Disabled", Duration = 3, Icon = "square"})
         end
     end,
 })
 
+-- Auto Upgrade
 local isUpgrading = false
 local upgradeConnection = nil
 
 MainTab:Toggle({
     Title = "Auto Upgrade (All)",
+    Desc = "Buys Tiers, Bodies, Weights, Morphs, Auras",
+    Icon = "arrow-up",
     Value = false,
     Callback = function(state)
         isUpgrading = state
@@ -83,25 +97,28 @@ MainTab:Toggle({
                     end
                 end)
             end)
-            Window:Notify({Title = "Auto Upgrade", Content = "Enabled", Duration = 3})
+            PainKillersUI:Notify({Title = "Auto Upgrade", Content = "Enabled", Duration = 3, Icon = "play"})
         else
             if upgradeConnection then upgradeConnection:Disconnect() upgradeConnection = nil end
-            Window:Notify({Title = "Auto Upgrade", Content = "Disabled", Duration = 3})
+            PainKillersUI:Notify({Title = "Auto Upgrade", Content = "Disabled", Duration = 3, Icon = "square"})
         end
     end,
 })
 
 -- ============================================
---  TAB: COMBAT
+--  TAB: COMBAT (BOSSES)
 -- ============================================
-local CombatTab = Window:Tab({ Title = "Combat" })
+local CombatTab = Window:Tab({ Title = "Combat", Icon = "skull" })
 CombatTab:Section({ Title = "Auto Kill Bosses" })
 
+-- Auto Kill Boss
 local isKillingBoss = false
 local bossConnection = nil
 
 CombatTab:Toggle({
     Title = "Auto Kill Boss",
+    Desc = "Attacks the normal Boss",
+    Icon = "crosshair",
     Value = false,
     Callback = function(state)
         isKillingBoss = state
@@ -114,22 +131,27 @@ CombatTab:Toggle({
                     local bs = Workspace:FindFirstChild("Boss")
                     local model = bs and bs:FindFirstChild("Model")
                     local target = model and model:FindFirstChild("Boss")
-                    if target then ReplicatedStorage.Events.Damage:FireServer(target) end
+                    if target then
+                        ReplicatedStorage.Events.Damage:FireServer(target)
+                    end
                 end)
             end)
-            Window:Notify({Title = "Auto Boss", Content = "Enabled", Duration = 3})
+            PainKillersUI:Notify({Title = "Auto Boss", Content = "Enabled", Duration = 3, Icon = "play"})
         else
             if bossConnection then bossConnection:Disconnect() bossConnection = nil end
-            Window:Notify({Title = "Auto Boss", Content = "Disabled", Duration = 3})
+            PainKillersUI:Notify({Title = "Auto Boss", Content = "Disabled", Duration = 3, Icon = "square"})
         end
     end,
 })
 
+-- Auto Kill Mega Boss
 local isKillingMega = false
 local megaConnection = nil
 
 CombatTab:Toggle({
     Title = "Auto Kill Mega Boss",
+    Desc = "Attacks the Mega Boss",
+    Icon = "crosshair",
     Value = false,
     Callback = function(state)
         isKillingMega = state
@@ -142,28 +164,33 @@ CombatTab:Toggle({
                     local mega = Workspace:FindFirstChild("Mega Boss")
                     local model = mega and mega:FindFirstChild("Model")
                     local target = model and model:FindFirstChild("Boss2")
-                    if target then ReplicatedStorage.Events.Damage:FireServer(target) end
+                    if target then
+                        ReplicatedStorage.Events.Damage:FireServer(target)
+                    end
                 end)
             end)
-            Window:Notify({Title = "Auto Mega Boss", Content = "Enabled", Duration = 3})
+            PainKillersUI:Notify({Title = "Auto Mega Boss", Content = "Enabled", Duration = 3, Icon = "play"})
         else
             if megaConnection then megaConnection:Disconnect() megaConnection = nil end
-            Window:Notify({Title = "Auto Mega Boss", Content = "Disabled", Duration = 3})
+            PainKillersUI:Notify({Title = "Auto Mega Boss", Content = "Disabled", Duration = 3, Icon = "square"})
         end
     end,
 })
 
 -- ============================================
---  TAB: MISC
+--  TAB: MISC (COINS & PETS)
 -- ============================================
-local MiscTab = Window:Tab({ Title = "Misc" })
+local MiscTab = Window:Tab({ Title = "Misc", Icon = "box" })
 MiscTab:Section({ Title = "Coins & Pets" })
 
+-- Auto Coins
 local isCollectingCoins = false
 local coinConnection = nil
 
 MiscTab:Toggle({
     Title = "Auto Collect Coins",
+    Desc = "Teleports coins to you",
+    Icon = "coins",
     Value = false,
     Callback = function(state)
         isCollectingCoins = state
@@ -186,26 +213,30 @@ MiscTab:Toggle({
                     end
                 end)
             end)
-            Window:Notify({Title = "Auto Coins", Content = "Enabled", Duration = 3})
+            PainKillersUI:Notify({Title = "Auto Coins", Content = "Enabled", Duration = 3, Icon = "play"})
         else
             if coinConnection then coinConnection:Disconnect() coinConnection = nil end
-            Window:Notify({Title = "Auto Coins", Content = "Disabled", Duration = 3})
+            PainKillersUI:Notify({Title = "Auto Coins", Content = "Disabled", Duration = 3, Icon = "square"})
         end
     end,
 })
 
+-- Auto Buy Pets
 local petName = "Cosmic Egg"
 local isBuyingPets = false
 local petConnection = nil
 
 MiscTab:Textbox({
     Title = "Pet Egg Name",
+    Desc = "Enter the exact egg name (e.g., Cosmic Egg)",
     Value = "Cosmic Egg",
     Callback = function(text) petName = text end
 })
 
 MiscTab:Toggle({
     Title = "Auto Buy Pets",
+    Desc = "Buys the specified egg",
+    Icon = "paw-print",
     Value = false,
     Callback = function(state)
         isBuyingPets = state
@@ -216,26 +247,31 @@ MiscTab:Toggle({
                 if not isBuyingPets then return end
                 pcall(function()
                     local buyPet = ReplicatedStorage.Events:FindFirstChild("Buy Pet")
-                    if buyPet then buyPet:FireServer(petName) end
+                    if buyPet then
+                        buyPet:FireServer(petName)
+                    end
                 end)
             end)
-            Window:Notify({Title = "Auto Pets", Content = "Enabled", Duration = 3})
+            PainKillersUI:Notify({Title = "Auto Pets", Content = "Enabled", Duration = 3, Icon = "play"})
         else
             if petConnection then petConnection:Disconnect() petConnection = nil end
-            Window:Notify({Title = "Auto Pets", Content = "Disabled", Duration = 3})
+            PainKillersUI:Notify({Title = "Auto Pets", Content = "Disabled", Duration = 3, Icon = "square"})
         end
     end,
 })
 
 -- ============================================
---  TAB: PLAYER
+--  TAB: PLAYER (PHYSICS)
 -- ============================================
-local PlayerTab = Window:Tab({ Title = "Player" })
+local PlayerTab = Window:Tab({ Title = "Player", Icon = "user" })
 PlayerTab:Section({ Title = "Physics & Movement" })
 
 PlayerTab:Slider({
     Title = "WalkSpeed",
+    Desc = "From 16 to 500",
+    Icon = "zap",
     Value = { Min = 16, Max = 500, Default = 16 },
+    Step = 1,
     Callback = function(value)
         local char = LocalPlayer.Character
         if char then
@@ -249,6 +285,7 @@ local noclip = false
 local noclipConnection = nil
 PlayerTab:Toggle({
     Title = "Noclip",
+    Icon = "ghost",
     Value = false,
     Callback = function(state)
         noclip = state
@@ -272,12 +309,16 @@ local flySpeed = 50
 
 PlayerTab:Slider({
     Title = "Fly Speed",
+    Icon = "wind",
     Value = { Min = 10, Max = 200, Default = 50 },
+    Step = 1,
     Callback = function(value) flySpeed = value end
 })
 
 PlayerTab:Toggle({
     Title = "Fly",
+    Desc = "Space - up, Shift - down",
+    Icon = "plane",
     Value = false,
     Callback = function(state)
         isFlying = state
@@ -315,15 +356,17 @@ PlayerTab:Toggle({
 -- ============================================
 --  TAB: OTHER
 -- ============================================
-local OtherTab = Window:Tab({ Title = "Other" })
+local OtherTab = Window:Tab({ Title = "Other", Icon = "wrench" })
 OtherTab:Section({ Title = "Useful Scripts" })
 
 OtherTab:Button({
     Title = "Dex++ (Explorer)",
+    Icon = "code",
     Callback = function() pcall(function() loadstring(game:HttpGet("https://github.com/AZYsGithub/DexPlusPlus/releases/latest/download/out.lua"))() end) end,
 })
 OtherTab:Button({
     Title = "Infinite Yield",
+    Icon = "terminal",
     Callback = function()
         task.spawn(function()
             pcall(function() getgenv().IY_LOADED = nil end)
@@ -335,13 +378,14 @@ OtherTab:Button({
 })
 OtherTab:Button({
     Title = "Anti-AFK",
+    Icon = "clock",
     Callback = function() pcall(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/hassanxzayn-lua/Anti-afk/main/antiafkbyhassanxzyn"))() end) end,
 })
 
 -- ============================================
 --  TAB: DESCRIPTIONS & CREDITS
 -- ============================================
-local DescTab = Window:Tab({ Title = "Descriptions" })
+local DescTab = Window:Tab({ Title = "Descriptions", Icon = "info" })
 DescTab:Section({ Title = "Script Information" })
 
 DescTab:Paragraph({
@@ -359,4 +403,4 @@ DescTab:Paragraph({
     Desc = "This script is Open Source. You are free to use, modify, and share it as long as you give proper credit to the author."
 })
 
-print("[Fitness Simulator Hub] Loaded with PainKillersUi.")
+print("[Fitness Simulator Hub] Loaded with PainKillersUI.")
